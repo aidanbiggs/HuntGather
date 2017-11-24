@@ -2,15 +2,21 @@ package com.example.android.huntgather;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.drm.DrmStore;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.internal.NavigationMenu;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -58,13 +64,44 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mActionBarDrawerToggle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.navBarDrawerLayout);
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.action_open,R.string.action_close);
+        mActionBarDrawerToggle.setDrawerIndicatorEnabled(true);
 
+        mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
+        mActionBarDrawerToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getLocationPermission();
+
+        NavigationView nav_view = (NavigationView) findViewById(R.id.nav_view);
+
+        nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                int id = item.getItemId();
+
+                if(id == R.id.nav_item_create){
+                    Toast.makeText(MapActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.nav_item_join){
+                    Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
+
+                }else if(id == R.id.nav_item_friends) {
+                    Toast.makeText(MapActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.nav_item_settings) {
+                    Toast.makeText(MapActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
+                }
+
+                    return true;
+            }
+        });
     }
 
     private void getDeviceLocation(){
@@ -157,7 +194,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        return mActionBarDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
 
+
+    }// end onOptionsItemSelected
 }
 
 

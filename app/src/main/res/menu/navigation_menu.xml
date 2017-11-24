@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_item_create"
+        android:title="@string/nav_create_hunt"
+        android:icon="@drawable/ic_createhunt">
+
+    </item>
+    <item android:id="@+id/nav_item_join"
+        android:title="@string/nav_join_hunt"
+        android:icon="@drawable/ic_joinhunt">
+
+    </item>
+    <item android:id="@+id/nav_item_friends"
+        android:title="@string/nav_friends"
+        android:icon="@drawable/ic_friends">
+
+    </item>
+    <item android:id="@+id/nav_item_settings"
+        android:title="@string/nav_settings"
+        android:icon="@drawable/ic_settingswheel">
+
+    </item>
+
+</menu>
