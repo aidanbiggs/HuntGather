@@ -3,7 +3,7 @@
     <string name="title_activity_maps">Hunt&amp;Gather</string>
 
     <!---
-    Navigation Bar Strings
+    Navigation Bar Title Strings
     -->
     <string name="nav_create_hunt">Create Hunt</string>
     <string name="nav_join_hunt">Join Hunt</string>
@@ -11,4 +11,14 @@
     <string name="nav_settings">Settings</string>
     <string name="action_open">Open</string>
     <string name="action_close">Close</string>
+
+    <!---
+    Create Hunt  Strings
+    -->
+    <string name="create_hunt_hunt_code">HUNT CODE:</string>
+    <string name="create_hunt_add_marker">Add Marker</string>
+    <string name="create_hunt_view_marker">View Markers</string>
+    <string name="create_hunt_markers_placed">Current Amount Of Markers Placed</string>
+    <string name="create_hunt_finished">Finished</string>
+
 </resources>

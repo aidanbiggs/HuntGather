@@ -1,16 +1,16 @@
 package com.example.android.huntgather;
 
 import android.Manifest;
+import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
-import android.drm.DrmStore;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -99,10 +99,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
+
+                Fragment navBarFragment = null;
                 int id = item.getItemId();
 
                 if(id == R.id.nav_item_create){
+
                     Toast.makeText(MapActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                    navBarFragment = new CreateHuntFragment();
                 }else if(id == R.id.nav_item_join){
                     Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
@@ -112,7 +116,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     Toast.makeText(MapActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
 
-                    return true;
+
+                if(navBarFragment != null){
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction ft = fragmentManager.beginTransaction();
+                    ft.replace(R.id.navBarDrawerLayout, navBarFragment).commit();
+
+
+                }
+
+
+
+                return true;
             }
         });
     }
