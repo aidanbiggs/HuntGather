@@ -106,6 +106,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if(id == R.id.nav_item_create){
 
                     Toast.makeText(MapActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                    mDrawerLayout.closeDrawers();
                     navBarFragment = new CreateHuntFragment();
                 }else if(id == R.id.nav_item_join){
                     Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
@@ -120,7 +121,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if(navBarFragment != null){
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction ft = fragmentManager.beginTransaction();
-                    ft.replace(R.id.navBarDrawerLayout, navBarFragment).commit();
+                    ft.replace(R.id.navBarDrawerLayout, navBarFragment).addToBackStack(null).commit();
 
 
                 }
@@ -224,6 +225,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
+
         return mActionBarDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
 
 
