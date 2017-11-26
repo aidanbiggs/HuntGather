@@ -1,15 +1,14 @@
 package com.example.android.huntgather;
 
 import android.Manifest;
-import android.content.Intent;
-import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -26,20 +25,31 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+import java.util.ArrayList;
 
+public class MapAddMarkerActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
+
+    private ArrayList<Marker> arrMarkerList;
+    private ArrayList<Polyline> arrPolylineList;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
        // Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
+        arrMarkerList = new ArrayList<>();
+        arrPolylineList = new ArrayList<>();
         mMap = googleMap;
+        mMap.setOnMapClickListener(this);
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
         if (mLocationPermissionsGranted) {
@@ -65,6 +75,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .bearing(314)
                 .build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
     }
 
     private static final String TAG = "MapActivity";
@@ -106,16 +118,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 if(id == R.id.nav_item_create){
 
-                    Toast.makeText(MapActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapAddMarkerActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
                     mDrawerLayout.closeDrawers();
                     navBarFragment = new CreateHuntFragment();
                 }else if(id == R.id.nav_item_join){
-                    Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapAddMarkerActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
                 }else if(id == R.id.nav_item_friends) {
-                    Toast.makeText(MapActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapAddMarkerActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.nav_item_settings) {
-                    Toast.makeText(MapActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapAddMarkerActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -155,7 +167,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
-                            Toast.makeText(MapActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapAddMarkerActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -174,7 +186,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-        mapFragment.getMapAsync(MapActivity.this);
+        mapFragment.getMapAsync(MapAddMarkerActivity.this);
     }
 
     private void getLocationPermission(){
@@ -232,11 +244,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }// end onOptionsItemSelected
 
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onMapClick(LatLng latLng) {
+
+        double lit = latLng.latitude;
+        double lon = latLng.longitude;
+        arrMarkerList.add(mMap.addMarker(new MarkerOptions().position(new LatLng(lit, lon)).title("Your Added Marker").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))));
+        for (Polyline polyline : arrPolylineList) {
+            polyline.remove();
+        }
+
+        if (arrMarkerList.size() > 1) {
+            PolylineOptions polylineOptions = new PolylineOptions();
+            for (Marker marker : arrMarkerList) {
+                polylineOptions.add(marker.getPosition());
+            }
+            arrPolylineList.add(mMap.addPolyline(polylineOptions));
+        }
     }
+
+
 }
 
 

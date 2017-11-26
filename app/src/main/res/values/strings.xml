@@ -18,7 +18,7 @@
     <string name="create_hunt_hunt_code">HUNT CODE:</string>
     <string name="create_hunt_add_marker">Add Marker</string>
     <string name="create_hunt_view_marker">View Markers</string>
-    <string name="create_hunt_markers_placed">Current Amount Of Markers Placed</string>
+    <string name="create_hunt_markers_placed">Current Amount Of Markers Placed : </string>
     <string name="create_hunt_finished">Finished</string>
 
 </resources>

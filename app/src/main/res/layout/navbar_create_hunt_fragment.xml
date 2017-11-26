@@ -32,13 +32,26 @@
         android:textSize="32sp" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/markers_placed_text"
+        android:layout_alignBottom="@+id/markers_placed_text"
+        android:layout_alignEnd="@+id/view_marker_button"
+        android:layout_alignRight="@+id/view_marker_button"
+        android:text=" "
+        android:id="@+id/marker_count"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/markers_placed_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/finish_button"
-        android:layout_alignLeft="@+id/add_marker_button"
-        android:layout_alignStart="@+id/add_marker_button"
-        android:layout_marginBottom="52dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="51dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
         android:text="@string/create_hunt_markers_placed"
         android:textSize="16sp" />
 

@@ -1,5 +1,6 @@
 package com.example.android.huntgather;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -43,6 +44,8 @@ public class CreateHuntFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 Toast.makeText(getActivity(),"You are inside create hunt fragment", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), MapAddMarkerActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -56,4 +59,10 @@ public class CreateHuntFragment extends Fragment{
         return sb.toString();
     }
 
+
+
+
+
 }
+
+
