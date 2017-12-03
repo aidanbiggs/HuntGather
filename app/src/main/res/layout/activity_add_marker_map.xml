@@ -18,23 +18,6 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="170dp">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/sky"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:layout_alignParentBottom="true"
-                android:background="@drawable/gradientsky"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <fragment
@@ -49,10 +32,6 @@
                 android:layout_height="match_parent"
                 android:background="#2200ff00"/>
 -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:background="@drawable/gradientmap"/>
 
 
             <Button

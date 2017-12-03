@@ -17,6 +17,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -66,15 +68,10 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         mMap.getUiSettings().setZoomGesturesEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
         mMap.getUiSettings().setCompassEnabled(false);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(39.87266,-4.028275))
-                .zoom(18)
-                .tilt(67.5f)
-                .bearing(314)
-                .build();
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
 
 
     }
@@ -96,7 +93,7 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
+        setContentView(R.layout.activity_add_marker_map);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.navBarDrawerLayout);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.action_open,R.string.action_close);
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -105,6 +102,14 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         mActionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getLocationPermission();
+        Button finishedButton = (Button) findViewById(R.id.add_marker_finished_button);
+
+        finishedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MapAddMarkerActivity.this.onBackPressed();
+            }
+        });
 
         NavigationView nav_view = (NavigationView) findViewById(R.id.nav_view);
 
@@ -161,7 +166,7 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
-                            mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())).title("Your Position"));
+                           // mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())).title("Your Position"));
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);
 
