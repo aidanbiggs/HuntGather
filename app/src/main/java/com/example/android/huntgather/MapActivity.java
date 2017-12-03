@@ -2,6 +2,7 @@ package com.example.android.huntgather;
 
 import android.Manifest;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -33,8 +34,37 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private static final String TAG = "MapActivity";
+
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+    private static final float DEFAULT_ZOOM = 15f;
+    private Boolean mLocationPermissionsGranted = false;
+    private GoogleMap mMap;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mActionBarDrawerToggle;
+
+    List<LatLng> allHuntPoints = new ArrayList<LatLng>();
+    ArrayList<String> allHuntCodes = new ArrayList<String>();
+    ArrayList<String> allIds = new ArrayList<String>();
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -57,31 +87,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
         mMap.getUiSettings().setCompassEnabled(false);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+
 
     }
 
-    private static final String TAG = "MapActivity";
 
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private static final float DEFAULT_ZOOM = 15f;
-
-
-    //vars
-    private Boolean mLocationPermissionsGranted = false;
-    private GoogleMap mMap;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mActionBarDrawerToggle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        new JSONTASK().execute("http://mi-linux.wlv.ac.uk/~1429967/getValues.php");
         mDrawerLayout = (DrawerLayout) findViewById(R.id.navBarDrawerLayout);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.action_open,R.string.action_close);
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -130,6 +149,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             }
         });
+
+
     }
 
     private void getDeviceLocation(){
@@ -235,6 +256,90 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+
+
+    public  class JSONTASK extends AsyncTask<String ,String,String> {
+
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+
+
+                URL url = new URL(urls[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+                InputStream stream = connection.getInputStream();
+
+                reader = new BufferedReader(new InputStreamReader(stream));
+                StringBuffer buffer = new StringBuffer();
+                String line = "";
+                while((line = reader.readLine()) != null){
+                    buffer.append(line);
+
+                }
+                String finalJson = buffer.toString();
+                JSONArray parentArray = new JSONArray(finalJson);
+
+                StringBuffer finalBufferedData = new StringBuffer();
+                for(int i = 0 ; i< parentArray.length() ; i++) {
+                    JSONObject parentObject = parentArray.getJSONObject(i);
+
+                    String jsonLat = parentObject.getString("lat");
+                    String jsonLng = parentObject.getString("lng");
+                    String jsonId = parentObject.getString("id");
+                    String jsonHuntCode = parentObject.getString("huntCode");
+
+                    allHuntPoints.add(new LatLng(Float.parseFloat(jsonLat),Float.parseFloat(jsonLng)));
+                    allIds.add(jsonId);
+                    allHuntCodes.add(jsonHuntCode);
+                    Log.d("This is AllHuntCodes", "Arr:" + allHuntPoints.toString());
+                    finalBufferedData.append(jsonLat + " AND " + jsonLng + " AND " + jsonId + " AND " + jsonHuntCode + "\n");
+
+                }
+
+                return finalBufferedData.toString();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if(reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(connection!=null){
+                    connection.disconnect();
+                }
+            }// end finally and catches
+            return null;
+        }// end do in background
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Log.d("huntpoints size","Size is "+ allHuntPoints.size());
+            for(int i = 0; i < allHuntPoints.size(); i++ ){
+
+
+                Log.d("mMapPrinting", "Arrary is : " + allHuntPoints.toString());
+                mMap.addMarker(new MarkerOptions().position(allHuntPoints.get(i)).title(allHuntCodes.get(i)));
+            }// end for
+
+        }
+    }// end JSONTASK
+
 }
 
 
