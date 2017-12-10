@@ -3,6 +3,7 @@ package com.example.android.huntgather;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,7 +29,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -37,13 +37,24 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MapAddMarkerActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private ArrayList<Marker> arrMarkerList;
     private ArrayList<Polyline> arrPolylineList;
-
+    JSONObject jsonMarkerList = new JSONObject();
+    JSONArray jsonArray = new JSONArray();
     @Override
     public void onMapReady(GoogleMap googleMap) {
        // Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
@@ -107,6 +118,7 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         finishedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                new CallAPI().execute("http://mi-linux.wlv.ac.uk/~1429967/setValues.php");
                 MapAddMarkerActivity.this.onBackPressed();
             }
         });
@@ -267,6 +279,94 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
             arrPolylineList.add(mMap.addPolyline(polylineOptions));
         }
     }
+
+    public class CallAPI extends AsyncTask<String,ArrayList<Marker>, String> {
+
+        public CallAPI(){
+            //set context variables if required
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            String markerLat ;
+            String markerLng ;
+            String huntCode = "test";
+            String userId = "13";
+
+
+
+            for(int i = 0 ; i < arrMarkerList.size() ; i++){
+
+                markerLat = String.valueOf(arrMarkerList.get(i).getPosition().latitude);
+                markerLng = String.valueOf(arrMarkerList.get(i).getPosition().longitude);
+
+                try {
+                    jsonMarkerList.put("lat",markerLat);
+                    jsonMarkerList.put("lng",markerLng);
+                    jsonMarkerList.put("id",userId);
+                    jsonMarkerList.put("huntCode",huntCode);
+                    jsonArray.put(jsonMarkerList);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d("MarkerLat", "Marker Lat is " + markerLat);
+                Log.d("markerLng", "marker Lng = is " + markerLng);
+
+            }
+
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String urlString = params[0]; // URL to call
+
+
+
+            OutputStream out = null;
+            try {
+
+
+                Log.v("params0",urlString);
+                Log.v("params1",jsonMarkerList.toString());
+
+                URL url = new URL(urlString);
+
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("POST");
+                out = new BufferedOutputStream(urlConnection.getOutputStream());
+
+                BufferedWriter writer = new BufferedWriter (new OutputStreamWriter(out, "UTF-8"));
+                Log.v("JSONarRAY", String.valueOf(jsonArray));
+                writer.write(String.valueOf(jsonArray));
+
+                int statusCode = urlConnection.getResponseCode();
+                Log.d("STATUS", " The status code is " + statusCode);
+
+
+                writer.flush();
+
+                writer.close();
+
+                out.close();
+
+                urlConnection.connect();
+                return null;
+
+            } catch (Exception e) {
+
+                System.out.println(e.getMessage());
+
+
+
+            }
+
+            return null;
+        }
+    } //end call API
 
 
 }
