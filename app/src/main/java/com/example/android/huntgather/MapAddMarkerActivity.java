@@ -42,7 +42,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -300,22 +302,26 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
 
                 markerLat = String.valueOf(arrMarkerList.get(i).getPosition().latitude);
                 markerLng = String.valueOf(arrMarkerList.get(i).getPosition().longitude);
-
+                Log.d("Counter", "i = " + i);
                 try {
+                    jsonMarkerList = new JSONObject();
                     jsonMarkerList.put("lat",markerLat);
                     jsonMarkerList.put("lng",markerLng);
                     jsonMarkerList.put("id",userId);
                     jsonMarkerList.put("huntCode",huntCode);
-                    jsonArray.put(jsonMarkerList);
+                    Log.d("markerList", "JSONMARKERLIST = " + jsonMarkerList);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                jsonArray.put(jsonMarkerList);
+                Log.d("JSONARRAY FOR", "jsonArray is " + jsonArray);
+
 
                 Log.d("MarkerLat", "Marker Lat is " + markerLat);
                 Log.d("markerLng", "marker Lng = is " + markerLng);
 
             }
-
+            Log.v("For Loop JsonArray"," = " + jsonArray);
         }
 
 
@@ -331,27 +337,45 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
 
 
                 Log.v("params0",urlString);
-                Log.v("params1",jsonMarkerList.toString());
+                Log.v("jsonArray is equal to ",jsonArray.toString());
 
                 URL url = new URL(urlString);
 
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("POST");
+                urlConnection.setRequestProperty("Content-type","application/json");
+                urlConnection.setDoOutput(true);
+
                 out = new BufferedOutputStream(urlConnection.getOutputStream());
 
                 BufferedWriter writer = new BufferedWriter (new OutputStreamWriter(out, "UTF-8"));
                 Log.v("JSONarRAY", String.valueOf(jsonArray));
                 writer.write(String.valueOf(jsonArray));
 
-                int statusCode = urlConnection.getResponseCode();
-                Log.d("STATUS", " The status code is " + statusCode);
-
+                StringBuffer response = null;
 
                 writer.flush();
 
                 writer.close();
 
                 out.close();
+                int statusCode = urlConnection.getResponseCode();
+                Log.d("STATUS", " The status code is " + statusCode);
+                switch (statusCode) {
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null) {
+                            response.append(inputLine);
+                        }
+                        in.close();
+
+                }
+
+                Log.v("response", " The response is " + response);
+
+
 
                 urlConnection.connect();
                 return null;
