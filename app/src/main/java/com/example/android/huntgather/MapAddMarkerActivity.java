@@ -56,6 +56,8 @@ import java.util.ArrayList;
 public class MapAddMarkerActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private ArrayList<Marker> arrMarkerList;
+    private ArrayList<String> questionList = new ArrayList<>();
+    private ArrayList<String> answerList = new ArrayList<>();
     private ArrayList<Polyline> arrPolylineList;
     JSONObject jsonMarkerList = new JSONObject();
     JSONArray jsonArray = new JSONArray();
@@ -272,22 +274,31 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         double lon = latLng.longitude;
         arrMarkerList.add(mMap.addMarker(new MarkerOptions().position(new LatLng(lit, lon)).title("Your Added Marker").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))));
 
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapAddMarkerActivity.this);
-        View mView = getLayoutInflater().inflate(R.layout.dialog_add_marker, null);
-        final EditText mQuestion = (EditText)  mView.findViewById(R.id.question_editText);
-        final EditText mAnswer = (EditText)  mView.findViewById(R.id.answer_editText);
-        Button mAddMarker = (Button)  mView.findViewById(R.id.add_marker_dialog);
+        /*
+        Code for dialog box
+         */
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapAddMarkerActivity.this); // Creates new dialog box builder of activity
+        View mView = getLayoutInflater().inflate(R.layout.dialog_add_marker, null); // overlays view on top of current
+
+        final EditText mQuestion = (EditText)  mView.findViewById(R.id.question_editText); // get text stored in question edit text
+        final EditText mAnswer = (EditText)  mView.findViewById(R.id.answer_editText); // get text stored in answer edit text
+        Button mAddMarker = (Button)  mView.findViewById(R.id.add_marker_dialog); //
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
-        dialog.show();
+        dialog.show(); // inflates dialog over builder
 
         mAddMarker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(!mQuestion.getText().toString().isEmpty() && !mAnswer.getText().toString().isEmpty()){
-                    dialog.dismiss();
+
+                    questionList.add(mQuestion.getText().toString());//add Question to question list
+                    answerList.add(mAnswer.getText().toString()); // add answer to answer list
+
+                    dialog.dismiss(); // close dialog when add marker pressed
 
                 }else{
+                    //If a box is empty dont post or leave
                     Toast.makeText(MapAddMarkerActivity.this, "Please fill in any empty fields", Toast.LENGTH_SHORT).show();
 
                 }
@@ -322,13 +333,16 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
             String markerLng ;
             String huntCode = "test";
             String userId = "13";
-
+            String question;
+            String answer;
 
 
             for(int i = 0 ; i < arrMarkerList.size() ; i++){
 
                 markerLat = String.valueOf(arrMarkerList.get(i).getPosition().latitude);
                 markerLng = String.valueOf(arrMarkerList.get(i).getPosition().longitude);
+                question  = questionList.get(i) ;
+                answer  = answerList.get(i) ;
                 Log.d("Counter", "i = " + i);
                 try {
                     jsonMarkerList = new JSONObject();
@@ -336,6 +350,8 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
                     jsonMarkerList.put("lng",markerLng);
                     jsonMarkerList.put("id",userId);
                     jsonMarkerList.put("huntCode",huntCode);
+                    jsonMarkerList.put("question",question);
+                    jsonMarkerList.put("answer",answer);
                     Log.d("markerList", "JSONMARKERLIST = " + jsonMarkerList);
                 } catch (JSONException e) {
                     e.printStackTrace();
