@@ -106,10 +106,23 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
-
+    private String passedHuntCode;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                passedHuntCode= null;
+            } else {
+                passedHuntCode= extras.getString("userHuntCode");
+            }
+        } else {
+            passedHuntCode= (String) savedInstanceState.getSerializable("userHuntCode");
+        }
+
+
         setContentView(R.layout.activity_add_marker_map);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.navBarDrawerLayout);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.action_open,R.string.action_close);
@@ -272,6 +285,9 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
 
         double lit = latLng.latitude;
         double lon = latLng.longitude;
+        String passedHuntCode ;
+
+
         arrMarkerList.add(mMap.addMarker(new MarkerOptions().position(new LatLng(lit, lon)).title("Your Added Marker").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))));
 
         /*
@@ -331,8 +347,8 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
             super.onPreExecute();
             String markerLat ;
             String markerLng ;
-            String huntCode = "test";
-            String userId = "13";
+            String huntCode = passedHuntCode;
+            String userId = "1";
             String question;
             String answer;
 

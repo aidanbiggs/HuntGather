@@ -31,7 +31,7 @@ public class CreateHuntFragment extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView mHuntCodeTextView = (TextView)view.findViewById(R.id.unique_hunt_create);
+        final TextView mHuntCodeTextView = (TextView)view.findViewById(R.id.unique_hunt_create);
         mHuntCodeTextView.setText(getRandomString(4));
 
         /*
@@ -43,6 +43,7 @@ public class CreateHuntFragment extends Fragment{
             public void onClick(View view) {
                 Toast.makeText(getActivity(),"You are inside create hunt fragment", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), MapAddMarkerActivity.class);
+                intent.putExtra("userHuntCode",mHuntCodeTextView.getText().toString());
                 startActivity(intent);
             }
         });
