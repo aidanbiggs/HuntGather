@@ -31,15 +31,13 @@ public class CreateHuntFragment extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        Random mHuntCodeRandom = new Random();
-//        int mHuntCodeNumber = mHuntCodeRandom.nextInt(1000-9999);
-//        String mHuntCodeString = String.valueOf(mHuntCodeNumber);
-//        //Log.d(TAG,"mHuntCodeNumber is " + mHuntCodeNumber);
-
         TextView mHuntCodeTextView = (TextView)view.findViewById(R.id.unique_hunt_create);
         mHuntCodeTextView.setText(getRandomString(4));
 
-
+        /*
+        When add marker button is pressed this will go to a blank map screen (MapAddMarkerActivity.class)
+        where tapping will add a marker
+         */
         view.findViewById(R.id.add_marker_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -48,8 +46,22 @@ public class CreateHuntFragment extends Fragment{
                 startActivity(intent);
             }
         });
+
+        /*
+        When Back button is pressed this will pop back to the main activity
+         */
+        view.findViewById(R.id.finish_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(),"Finished Clicked", Toast.LENGTH_SHORT).show();
+                getFragmentManager().popBackStack();
+            }
+        });
     }
 
+    /*
+       Generates random 4 length character for Hunt Code
+     */
     private static String getRandomString(final int sizeOfRandomString)
     {
         final Random random=new Random();
