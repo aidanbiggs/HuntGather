@@ -21,4 +21,15 @@
     <string name="create_hunt_markers_placed">Current Amount Of Markers Placed : </string>
     <string name="create_hunt_finished">Finished</string>
 
+    <!--
+    Add Hunt Marker Box strings
+    -->
+    <string name="add_clue">Add Clue</string>
+    <string name="tap_select">(Tap to Select)</string>
+    <string name="own_clue">Own Clue</string>
+    <string name="random_riddle">Random Riddle</string>
+    <string name="random_math">Random Math</string>
+    <string name="answer">Answer</string>
+    <string name="question">Question</string>
+
 </resources>

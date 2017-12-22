@@ -15,11 +15,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -269,6 +271,31 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         double lit = latLng.latitude;
         double lon = latLng.longitude;
         arrMarkerList.add(mMap.addMarker(new MarkerOptions().position(new LatLng(lit, lon)).title("Your Added Marker").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))));
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapAddMarkerActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_add_marker, null);
+        final EditText mQuestion = (EditText)  mView.findViewById(R.id.question_editText);
+        final EditText mAnswer = (EditText)  mView.findViewById(R.id.answer_editText);
+        Button mAddMarker = (Button)  mView.findViewById(R.id.add_marker_dialog);
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+        mAddMarker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!mQuestion.getText().toString().isEmpty() && !mAnswer.getText().toString().isEmpty()){
+                    dialog.dismiss();
+
+                }else{
+                    Toast.makeText(MapAddMarkerActivity.this, "Please fill in any empty fields", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+
+
         for (Polyline polyline : arrPolylineList) {
             polyline.remove();
         }
