@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class ViewPlacedMarkers extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "MapActivity";
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -62,6 +62,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
+    private String passedHuntCode;
 
     List<LatLng> allHuntPoints = new ArrayList<LatLng>();
     ArrayList<String> allHuntCodes = new ArrayList<String>();
@@ -101,7 +102,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        getLocationPermission();
         new JSONTASK().execute("http://mi-linux.wlv.ac.uk/~1429967/getValues.php");
         mDrawerLayout = (DrawerLayout) findViewById(R.id.navBarDrawerLayout);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.action_open,R.string.action_close);
@@ -110,9 +110,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
         mActionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        getLocationPermission();
 
         NavigationView nav_view = (NavigationView) findViewById(R.id.nav_view);
+
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                passedHuntCode= null;
+            } else {
+                passedHuntCode= extras.getString("userHuntCode");
+            }
+        } else {
+            passedHuntCode= (String) savedInstanceState.getSerializable("userHuntCode");
+        }
 
 
         nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -125,16 +137,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 if(id == R.id.nav_item_create){
 
-                    Toast.makeText(MapActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewPlacedMarkers.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
                     mDrawerLayout.closeDrawers();
                     navBarFragment = new CreateHuntFragment();
                 }else if(id == R.id.nav_item_join){
-                    Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewPlacedMarkers.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
                 }else if(id == R.id.nav_item_friends) {
-                    Toast.makeText(MapActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewPlacedMarkers.this, "Friends Selected", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.nav_item_settings) {
-                    Toast.makeText(MapActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewPlacedMarkers.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -176,7 +188,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
-                            Toast.makeText(MapActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ViewPlacedMarkers.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -195,7 +207,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-        mapFragment.getMapAsync(MapActivity.this);
+        mapFragment.getMapAsync(ViewPlacedMarkers.this);
     }
 
     private void getLocationPermission(){
@@ -298,10 +310,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     String jsonLng = parentObject.getString("lng");
                     String jsonId = parentObject.getString("id");
                     String jsonHuntCode = parentObject.getString("huntCode");
-
-                    allHuntPoints.add(new LatLng(Float.parseFloat(jsonLat),Float.parseFloat(jsonLng)));
-                    allIds.add(jsonId);
-                    allHuntCodes.add(jsonHuntCode);
+                    if(jsonHuntCode.equals(passedHuntCode)) {
+                        allHuntPoints.add(new LatLng(Float.parseFloat(jsonLat), Float.parseFloat(jsonLng)));
+                        allIds.add(jsonId);
+                        allHuntCodes.add(jsonHuntCode);
+                    }
                     Log.d("This is AllHuntCodes", "Arr:" + allHuntCodes.toString());
                     finalBufferedData.append(jsonLat + " AND " + jsonLng + " AND " + jsonId + " AND " + jsonHuntCode + "\n");
 
@@ -337,16 +350,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             String prevHuntCode = "EMPTY";
             String currHuntCode;
+
             int colour = 0;
             Random r = new Random();
             for(int i = 0; i < allHuntPoints.size(); i++ ){
 //                Log.d("mMapPrinting", "Arrary is : " + allHuntPoints.toString());
 //                Log.d("allhuntCodes", "allHuntCodes is : " + allHuntCodes.toString());
-
-                currHuntCode = allHuntCodes.get(i);
                 Log.d("Colour is", "Colour = " + colour);
+                currHuntCode = allHuntCodes.get(i);
+
                 if(!currHuntCode.equals(prevHuntCode)){
-                    if(colour<329){
+                    if(colour<=329){
                         colour = colour + 30;
                     }else{
                         colour = 0;
@@ -375,14 +389,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return BitmapDescriptorFactory.defaultMarker(hsv[0]);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() > 0 ){
-            getFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
-        }
-    }
+
+
 
 }
 

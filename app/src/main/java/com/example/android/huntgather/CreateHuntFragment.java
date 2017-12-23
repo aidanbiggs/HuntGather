@@ -58,6 +58,17 @@ public class CreateHuntFragment extends Fragment{
                 getFragmentManager().popBackStack();
             }
         });
+
+        view.findViewById(R.id.view_marker_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(),"View Markers clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(),ViewPlacedMarkers.class);
+                intent.putExtra("userHuntCode",mHuntCodeTextView.getText().toString());
+                startActivity(intent);
+            }
+        });
+
     }
 
     /*

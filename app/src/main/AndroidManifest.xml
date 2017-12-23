@@ -41,6 +41,7 @@
         </activity>
 
         <activity android:name=".MapAddMarkerActivity"/>
+        <activity android:name=".ViewPlacedMarkers"/>
     </application>
 
 </manifest>
