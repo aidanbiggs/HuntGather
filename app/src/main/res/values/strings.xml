@@ -32,4 +32,10 @@
     <string name="answer">Answer</string>
     <string name="question">Question</string>
 
+    
+    <!--
+    Join Hunt dialog text
+    -->
+    
+    <string name="hunt_code">Hunt Code</string>
 </resources>

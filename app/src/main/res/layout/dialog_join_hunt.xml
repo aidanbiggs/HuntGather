@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/join_hunt_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/nav_join_hunt"
+        android:textSize="24sp"
+        android:layout_marginTop="5sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/hunt_code_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/create_hunt_hunt_code" />
+
+    <EditText
+        android:id="@+id/hunt_code_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:ems="10"
+        android:inputType="textLongMessage"
+        android:hint="@string/hunt_code" />
+
+
+    <Button
+        android:id="@+id/join_hunt_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/nav_join_hunt" />
+
+</LinearLayout>

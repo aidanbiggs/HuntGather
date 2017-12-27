@@ -17,9 +17,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -130,6 +134,35 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     navBarFragment = new CreateHuntFragment();
                 }else if(id == R.id.nav_item_join){
                     Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapActivity.this); // Creates new dialog box builder of activity
+                    View mView = getLayoutInflater().inflate(R.layout.dialog_join_hunt, null); // overlays view on top of current
+
+                    final EditText mHuntJoin = (EditText)  mView.findViewById(R.id.hunt_code_editText); // get text stored in question edit text
+
+                    Button mJoinHuntBut = (Button)  mView.findViewById(R.id.join_hunt_dialog); //
+                    mBuilder.setView(mView);
+                    final AlertDialog dialog = mBuilder.create();
+                    dialog.show(); // inflates dialog over builder
+
+                    mJoinHuntBut.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(!mHuntJoin.getText().toString().isEmpty()){
+
+                                Toast.makeText(MapActivity.this, "HuntCode is " + mHuntJoin.getText().toString(), Toast.LENGTH_SHORT).show();
+
+
+                                dialog.dismiss(); // close dialog when add marker pressed
+
+                            }else{
+                                //If a box is empty dont post or leave
+                                Toast.makeText(MapActivity.this, "Please fill in any empty fields", Toast.LENGTH_SHORT).show();
+
+                            }
+                        }
+                    });
+
+
 
                 }else if(id == R.id.nav_item_friends) {
                     Toast.makeText(MapActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
