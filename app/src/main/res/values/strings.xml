@@ -33,9 +33,8 @@
     <string name="question">Question</string>
 
     
-    <!--
-    Join Hunt dialog text
-    -->
-    
+   <string name="answer_question">Answer The Following Question:</string>
+   <string name="submit_answer">Submit Answer</string>
+
     <string name="hunt_code">Hunt Code</string>
 </resources>

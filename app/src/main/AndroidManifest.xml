@@ -42,6 +42,7 @@
 
         <activity android:name=".MapAddMarkerActivity"/>
         <activity android:name=".ViewPlacedMarkers"/>
+        <activity android:name=".JoinHuntMap"/>
     </application>
 
 </manifest>

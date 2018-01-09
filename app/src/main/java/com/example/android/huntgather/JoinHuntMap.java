@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -52,10 +53,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "MapActivity";
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -67,6 +67,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
+    private String passedHuntCode;
 
     List<LatLng> allHuntPoints = new ArrayList<LatLng>();
     ArrayList<String> allHuntCodes = new ArrayList<String>();
@@ -106,7 +107,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        getLocationPermission();
         new JSONTASK().execute("http://mi-linux.wlv.ac.uk/~1429967/getValues.php");
         mDrawerLayout = (DrawerLayout) findViewById(R.id.navBarDrawerLayout);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.action_open,R.string.action_close);
@@ -115,9 +115,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
         mActionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        getLocationPermission();
 
         NavigationView nav_view = (NavigationView) findViewById(R.id.nav_view);
+
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                passedHuntCode= null;
+            } else {
+                passedHuntCode= extras.getString("userHuntCode");
+            }
+        } else {
+            passedHuntCode= (String) savedInstanceState.getSerializable("userHuntCode");
+        }
 
 
         nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -130,51 +142,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 if(id == R.id.nav_item_create){
 
-                    Toast.makeText(MapActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(JoinHuntMap.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
                     mDrawerLayout.closeDrawers();
                     navBarFragment = new CreateHuntFragment();
                 }else if(id == R.id.nav_item_join){
-                    Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
-                    AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapActivity.this); // Creates new dialog box builder of activity
-                    View mView = getLayoutInflater().inflate(R.layout.dialog_join_hunt, null); // overlays view on top of current
-
-                    final EditText mHuntJoin = (EditText)  mView.findViewById(R.id.hunt_code_editText); // get text stored in question edit text
-
-                    final Button mJoinHuntBut = (Button)  mView.findViewById(R.id.join_hunt_dialog); //
-                    mBuilder.setView(mView);
-                    final AlertDialog dialog = mBuilder.create();
-                    dialog.show(); // inflates dialog over builder
-
-                    mJoinHuntBut.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if(!mHuntJoin.getText().toString().isEmpty() ){
-
-                                if(mHuntJoin.getText().toString().length() == 4) {
-                                    Toast.makeText(MapActivity.this, "HuntCode is " + mHuntJoin.getText().toString(), Toast.LENGTH_SHORT).show();
-
-
-                                    dialog.dismiss(); // close dialog when add marker pressed
-                                    Intent intent = new Intent(MapActivity.this, JoinHuntMap.class);
-                                    intent.putExtra("userHuntCode", mHuntJoin.getText().toString());
-                                    startActivity(intent);
-                                }else{
-                                    Toast.makeText(MapActivity.this, "Hunt Codes must be 4 characters long and are case sensitive.", Toast.LENGTH_LONG).show();
-                                }
-                            }else{
-                                //If a box is empty dont post or leave
-                                Toast.makeText(MapActivity.this, "Please fill in any empty fields", Toast.LENGTH_LONG).show();
-
-                            }
-                        }
-                    });
-
-
+                    Toast.makeText(JoinHuntMap.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
                 }else if(id == R.id.nav_item_friends) {
-                    Toast.makeText(MapActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(JoinHuntMap.this, "Friends Selected", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.nav_item_settings) {
-                    Toast.makeText(MapActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(JoinHuntMap.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -191,6 +168,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             }
         });
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(JoinHuntMap.this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_question_answer,null);
+
+        final EditText mUserAnswer = (EditText) mView.findViewById(R.id.answer_editText);
+
+        final Button mSubmitAnswer = (Button) mView.findViewById(R.id.button_submit_answer);
+
+        mBuilder.setView(mView);
+
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
 
 
     }
@@ -216,7 +205,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
-                            Toast.makeText(MapActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(JoinHuntMap.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -235,7 +224,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-        mapFragment.getMapAsync(MapActivity.this);
+        mapFragment.getMapAsync(JoinHuntMap.this);
     }
 
     private void getLocationPermission(){
@@ -338,10 +327,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     String jsonLng = parentObject.getString("lng");
                     String jsonId = parentObject.getString("id");
                     String jsonHuntCode = parentObject.getString("huntCode");
-
-                    allHuntPoints.add(new LatLng(Float.parseFloat(jsonLat),Float.parseFloat(jsonLng)));
-                    allIds.add(jsonId);
-                    allHuntCodes.add(jsonHuntCode);
+                    if(jsonHuntCode.equals(passedHuntCode)) {
+                        allHuntPoints.add(new LatLng(Float.parseFloat(jsonLat), Float.parseFloat(jsonLng)));
+                        allIds.add(jsonId);
+                        allHuntCodes.add(jsonHuntCode);
+                    }
                     Log.d("This is AllHuntCodes", "Arr:" + allHuntCodes.toString());
                     finalBufferedData.append(jsonLat + " AND " + jsonLng + " AND " + jsonId + " AND " + jsonHuntCode + "\n");
 
@@ -373,30 +363,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            Log.d("huntpoints size","Size is "+ allHuntPoints.size());
 
-            String prevHuntCode = "EMPTY";
-            String currHuntCode;
-            int colour = 0;
-            Random r = new Random();
-            for(int i = 0; i < allHuntPoints.size(); i++ ){
-//                Log.d("mMapPrinting", "Arrary is : " + allHuntPoints.toString());
-//                Log.d("allhuntCodes", "allHuntCodes is : " + allHuntCodes.toString());
 
-                currHuntCode = allHuntCodes.get(i);
-                Log.d("Colour is", "Colour = " + colour);
-                if(!currHuntCode.equals(prevHuntCode)){
-                    if(colour<329){
-                        colour = colour + 30;
-                    }else{
-                        colour = 0;
-                    }
 
-                }
-
-                prevHuntCode = currHuntCode;
-                mMap.addMarker(new MarkerOptions().position(allHuntPoints.get(i)).title(allHuntCodes.get(i)).icon(BitmapDescriptorFactory.defaultMarker(colour)));
-            }// end for
 
         }
     }// end JSONTASK
@@ -415,14 +384,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return BitmapDescriptorFactory.defaultMarker(hsv[0]);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() > 0 ){
-            getFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
-        }
-    }
+
+
 
 }
 
