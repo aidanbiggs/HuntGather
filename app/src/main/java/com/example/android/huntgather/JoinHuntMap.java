@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,6 +44,7 @@ import com.google.android.gms.tasks.Task;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -69,10 +71,12 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private String passedHuntCode;
 
-    List<LatLng> allHuntPoints = new ArrayList<LatLng>();
-    ArrayList<String> allHuntCodes = new ArrayList<String>();
-    ArrayList<String> allIds = new ArrayList<String>();
-
+    public List<LatLng> allHuntPoints = new ArrayList<LatLng>();
+    public ArrayList<String> allHuntCodes = new ArrayList<String>();
+    public ArrayList<String> allIds = new ArrayList<String>();
+    public ArrayList<String> allQs = new ArrayList<String>();
+    public ArrayList<String> allAnswers = new ArrayList<String>();
+    public int counter = 0;
     @Override
     public void onMapReady(GoogleMap googleMap) {
        // Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
@@ -106,7 +110,7 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
+        setContentView(R.layout.activity_map_join);
         new JSONTASK().execute("http://mi-linux.wlv.ac.uk/~1429967/getValues.php");
         mDrawerLayout = (DrawerLayout) findViewById(R.id.navBarDrawerLayout);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.action_open,R.string.action_close);
@@ -116,7 +120,6 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
         mActionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getLocationPermission();
-
         NavigationView nav_view = (NavigationView) findViewById(R.id.nav_view);
 
 
@@ -130,6 +133,22 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
         } else {
             passedHuntCode= (String) savedInstanceState.getSerializable("userHuntCode");
         }
+
+        Log.v("Testing V" , allQs.toString());
+
+
+//        Bundle bundle = new Bundle();
+//        bundle.putStringArrayList("allHuntCodes", allHuntCodes);
+//        bundle.putStringArrayList("allIds", allIds);
+//        bundle.putStringArrayList("allQs", allQs);
+//        bundle.putStringArrayList("allAnswers", allAnswers);
+
+        //QAFragment.setArguments(bundle);
+
+
+
+
+
 
 
         nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -169,19 +188,29 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+    }
+
+    private void createQDialog() {
+
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(JoinHuntMap.this);
         View mView = getLayoutInflater().inflate(R.layout.dialog_question_answer,null);
 
         final EditText mUserAnswer = (EditText) mView.findViewById(R.id.answer_editText);
-
         final Button mSubmitAnswer = (Button) mView.findViewById(R.id.button_submit_answer);
+        setContentView(mView);
+
 
         mBuilder.setView(mView);
 
         final AlertDialog dialog = mBuilder.create();
+
+
+
         dialog.show();
-
-
+        final TextView mUserQ = (TextView) findViewById(R.id.user_question_textView);
+        String hello = "hello";
+        Log.d("Hello = " , " = " + hello);
+        mUserQ.setText(String.valueOf(hello));
     }
 
     private void getDeviceLocation(){
@@ -303,7 +332,7 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
             allIds.clear();
             try {
 
-
+                Log.d("reaching try", "Reaching try 0");
                 URL url = new URL(urls[0]);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
@@ -316,7 +345,9 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
                     buffer.append(line);
 
                 }
+                Log.d("reaching try", "Reaching try 0");
                 String finalJson = buffer.toString();
+                Log.d("finalJson", "finalJson = " + finalJson);
                 JSONArray parentArray = new JSONArray(finalJson);
 
                 StringBuffer finalBufferedData = new StringBuffer();
@@ -327,12 +358,18 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
                     String jsonLng = parentObject.getString("lng");
                     String jsonId = parentObject.getString("id");
                     String jsonHuntCode = parentObject.getString("huntCode");
+                    String jsonQ = parentObject.getString("question");
+                    String jsonAnswer = parentObject.getString("answer");
                     if(jsonHuntCode.equals(passedHuntCode)) {
                         allHuntPoints.add(new LatLng(Float.parseFloat(jsonLat), Float.parseFloat(jsonLng)));
                         allIds.add(jsonId);
                         allHuntCodes.add(jsonHuntCode);
+                        allQs.add(jsonQ);
+                        allAnswers.add(jsonAnswer);
                     }
                     Log.d("This is AllHuntCodes", "Arr:" + allHuntCodes.toString());
+                    Log.d("This is q's", "Arr:" + allQs.toString());
+                    Log.d("This is a's", "Arr:" + allAnswers.toString());
                     finalBufferedData.append(jsonLat + " AND " + jsonLng + " AND " + jsonId + " AND " + jsonHuntCode + "\n");
 
                 }
@@ -357,15 +394,22 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
                     connection.disconnect();
                 }
             }// end finally and catches
+
+
             return null;
         }// end do in background
 
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-
-
-
+            Log.v("JoinHuntMap allAnswers", allAnswers.toString());
+            Log.v("JoinHuntMap allQ's", allQs.toString());
+            setAllAnswers(allAnswers);
+            setAllQs(allQs);
+            Fragment QAFragment = new QuestionAnswerFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.navBarDrawerLayout, QAFragment).addToBackStack(null).commit();
 
         }
     }// end JSONTASK
@@ -373,20 +417,28 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
-        new JSONTASK().execute("http://mi-linux.wlv.ac.uk/~1429967/getValues.php");
-    }
-
-
-    // method definition
-    public BitmapDescriptor getMarkerIcon(String color) {
-        float[] hsv = new float[3];
-        Color.colorToHSV(Color.parseColor(color), hsv);
-        return BitmapDescriptorFactory.defaultMarker(hsv[0]);
+        //new JSONTASK().execute("http://mi-linux.wlv.ac.uk/~1429967/getValues.php");
     }
 
 
 
 
+    public ArrayList<String> getAllAnswers() {
+        return allAnswers;
+    }
+
+    public void setAllAnswers(ArrayList<String> allAnswers) {
+        this.allAnswers = allAnswers;
+    }
+
+    public ArrayList<String> getAllQs() {
+
+        return allQs;
+    }
+
+    public void setAllQs(ArrayList<String> allQs) {
+        this.allQs = allQs;
+    }
 }
 
 
