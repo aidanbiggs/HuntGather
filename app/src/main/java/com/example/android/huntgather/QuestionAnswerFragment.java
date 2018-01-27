@@ -25,6 +25,14 @@ public class QuestionAnswerFragment extends Fragment {
     ArrayList<String> allAnswersPassed = new ArrayList<String>();
     String placeHolderAnswer = "";
     String placeHolderQ = "";
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        final JoinHuntMap mainActivity = (JoinHuntMap) getActivity(); //https://stackoverflow.com/questions/13067033/how-to-access-activity-variables-from-a-fragment-android
+        mainActivity.locationChecker();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,16 +49,16 @@ public class QuestionAnswerFragment extends Fragment {
 
 
 
-        if(mainActivity.counter == 0) {
-            try{
-                placeHolderAnswer = allAnswersPassed.get(0);
-                placeHolderQ = allQsPassed.get(0);
 
-            }catch(Exception e){
-                Log.d("Cant get (0)", "Cant get allAnswersPassed(0)");
+        try{
+            placeHolderAnswer = allAnswersPassed.get(mainActivity.counter);
+            placeHolderQ = allQsPassed.get(mainActivity.counter);
 
-            }
+        }catch(Exception e){
+            Log.d("Cant get (0)", "Cant get allAnswersPassed(0)");
+
         }
+
 
 
 
@@ -74,6 +82,7 @@ public class QuestionAnswerFragment extends Fragment {
                     mainActivity.counter++;
                     Toast.makeText(getActivity(),"Answer is correct", Toast.LENGTH_SHORT).show();
                     getFragmentManager().popBackStack();
+
 
                 }// end if check
             }

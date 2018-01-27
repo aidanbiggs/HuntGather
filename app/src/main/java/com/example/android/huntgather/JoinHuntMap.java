@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -70,6 +71,10 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private String passedHuntCode;
+
+    public Location currentLocation;
+
+
 
     public List<LatLng> allHuntPoints = new ArrayList<LatLng>();
     public ArrayList<String> allHuntCodes = new ArrayList<String>();
@@ -136,21 +141,6 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
 
         Log.v("Testing V" , allQs.toString());
 
-
-//        Bundle bundle = new Bundle();
-//        bundle.putStringArrayList("allHuntCodes", allHuntCodes);
-//        bundle.putStringArrayList("allIds", allIds);
-//        bundle.putStringArrayList("allQs", allQs);
-//        bundle.putStringArrayList("allAnswers", allAnswers);
-
-        //QAFragment.setArguments(bundle);
-
-
-
-
-
-
-
         nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -174,6 +164,7 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
                 }
 
 
+
                 if(navBarFragment != null){
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -182,35 +173,51 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
 
                 }
 
-
-
                 return true;
             }
         });
 
     }
 
-    private void createQDialog() {
+    public void locationChecker() {
+        addMarkerToMap();
+        getDeviceLocation();// updates Current Location
+        Location markerLocation = new Location("Marker Point");
+        float distanceMarkerToDevice = -1 ;
+        try {
 
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(JoinHuntMap.this);
-        View mView = getLayoutInflater().inflate(R.layout.dialog_question_answer,null);
+           markerLocation.setLatitude(allHuntPoints.get(counter).latitude);
+           markerLocation.setLongitude(allHuntPoints.get(counter).longitude);
+           distanceMarkerToDevice = markerLocation.distanceTo(currentLocation);
+          // Log.d(TAG, "LocationChecker:  dis" + distanceMarkerToDevice);
+           Log.d(TAG, "LocationChecker: Distance is " + distanceMarkerToDevice + " markerLocation is " + markerLocation + " currentLocation is " + currentLocation);
+        }catch (Exception e){
 
-        final EditText mUserAnswer = (EditText) mView.findViewById(R.id.answer_editText);
-        final Button mSubmitAnswer = (Button) mView.findViewById(R.id.button_submit_answer);
-        setContentView(mView);
+            Log.e("LocationChecker", "Unable to get variables");
+        }
+
+        if((distanceMarkerToDevice > 0 && distanceMarkerToDevice < 65)){
+
+            Toast.makeText(JoinHuntMap.this, "within 65m of current marker", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "LocationChecker: Near Location");
+            Fragment QAFragment = new QuestionAnswerFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.navBarDrawerLayout, QAFragment).addToBackStack(null).commit();
 
 
-        mBuilder.setView(mView);
+        }else{
 
-        final AlertDialog dialog = mBuilder.create();
+            Toast.makeText(JoinHuntMap.this, "TOO FAR", Toast.LENGTH_SHORT).show();
 
-
-
-        dialog.show();
-        final TextView mUserQ = (TextView) findViewById(R.id.user_question_textView);
-        String hello = "hello";
-        Log.d("Hello = " , " = " + hello);
-        mUserQ.setText(String.valueOf(hello));
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    locationChecker();
+                }
+            },10000);
+        }
     }
 
     private void getDeviceLocation(){
@@ -227,10 +234,12 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
-                            Location currentLocation = (Location) task.getResult();
+                            currentLocation = (Location) task.getResult();
                             //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())).title("Your Position"));
+
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                    DEFAULT_ZOOM);
+                                    mMap.getCameraPosition().zoom);
+
 
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
@@ -406,10 +415,9 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
             Log.v("JoinHuntMap allQ's", allQs.toString());
             setAllAnswers(allAnswers);
             setAllQs(allQs);
-            Fragment QAFragment = new QuestionAnswerFragment();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction ft = fragmentManager.beginTransaction();
-            ft.replace(R.id.navBarDrawerLayout, QAFragment).addToBackStack(null).commit();
+            locationChecker();
+
+
 
         }
     }// end JSONTASK
@@ -439,7 +447,20 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     public void setAllQs(ArrayList<String> allQs) {
         this.allQs = allQs;
     }
-}
+
+    private void addMarkerToMap(){
+        try {
+            mMap.clear();
+            mMap.addMarker(new MarkerOptions().position(new LatLng(allHuntPoints.get(counter).latitude, allHuntPoints.get(counter).longitude)).title("Your Goal"));
+        }catch(Exception e){
+
+            Log.e("AddMarkerToMap", "Cant add marker");
+        }// end try Catch
+
+    }// End addMarkerToMap
+
+
+}//End JoinHuntMap
 
 
 
