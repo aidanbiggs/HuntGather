@@ -67,6 +67,7 @@ public class QuestionAnswerFragment extends Fragment {
         final EditText mUserA = (EditText) view.findViewById(R.id.answer_editText);
         final Button mButtonFin = (Button) view.findViewById(R.id.button_submit_answer);
 
+        if(mainActivity.counter <= allQsPassed.size())
         mUserQ.setText(placeHolderQ);
 
 
@@ -81,6 +82,7 @@ public class QuestionAnswerFragment extends Fragment {
 
                     mainActivity.counter++;
                     Toast.makeText(getActivity(),"Answer is correct", Toast.LENGTH_SHORT).show();
+
                     getFragmentManager().popBackStack();
 
 

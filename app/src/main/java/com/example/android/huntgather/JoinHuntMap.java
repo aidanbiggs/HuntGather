@@ -82,6 +82,8 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     public ArrayList<String> allQs = new ArrayList<String>();
     public ArrayList<String> allAnswers = new ArrayList<String>();
     public int counter = 0;
+    public int zoomCounter = 0;
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
        // Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
@@ -180,6 +182,15 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void locationChecker() {
+
+        if(counter == allQs.size()) {
+            Fragment QAFragment = new QuestionAnswerFragment();
+            Fragment QAFragmentFinish = new FinishFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.navBarDrawerLayout, QAFragmentFinish).addToBackStack(null).commit();
+
+        }
         addMarkerToMap();
         getDeviceLocation();// updates Current Location
         Location markerLocation = new Location("Marker Point");
@@ -201,22 +212,29 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
             Toast.makeText(JoinHuntMap.this, "within 65m of current marker", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "LocationChecker: Near Location");
             Fragment QAFragment = new QuestionAnswerFragment();
+            Fragment QAFragmentFinish = new FinishFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction ft = fragmentManager.beginTransaction();
-            ft.replace(R.id.navBarDrawerLayout, QAFragment).addToBackStack(null).commit();
+            Log.d("Counter and Size", " Coutner = " + counter + " Size = " + allQs.size());
+            if(counter < allQs.size()) {
+                ft.replace(R.id.navBarDrawerLayout, QAFragment).addToBackStack(null).commit();
+            }else{
+                ft.replace(R.id.navBarDrawerLayout, QAFragmentFinish).addToBackStack(null).commit();
 
+            }
 
         }else{
 
-            Toast.makeText(JoinHuntMap.this, "TOO FAR", Toast.LENGTH_SHORT).show();
-
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    locationChecker();
-                }
-            },10000);
+           // Toast.makeText(JoinHuntMap.this, "TOO FAR", Toast.LENGTH_SHORT).show();
+            if(counter < allQs.size()) {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        locationChecker();
+                    }
+                }, 1000);
+            }
         }
     }
 
@@ -236,10 +254,13 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
                             Log.d(TAG, "onComplete: found location!");
                             currentLocation = (Location) task.getResult();
                             //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())).title("Your Position"));
-
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                    mMap.getCameraPosition().zoom);
-
+                            if(zoomCounter >0) {
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                        mMap.getCameraPosition().zoom);
+                            }else{
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM);
+                                zoomCounter++;
+                            }
 
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
