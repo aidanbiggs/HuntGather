@@ -68,6 +68,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
 
+    MyDBHandler dbHandler;
     List<LatLng> allHuntPoints = new ArrayList<LatLng>();
     ArrayList<String> allHuntCodes = new ArrayList<String>();
     ArrayList<String> allIds = new ArrayList<String>();
@@ -115,8 +116,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
         mActionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
+        dbHandler = new MyDBHandler(this,null,null,1);
+        dbHandler.clearDatabase();
         NavigationView nav_view = (NavigationView) findViewById(R.id.nav_view);
 
 
@@ -159,6 +160,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                         dialog.dismiss(); // close dialog when add marker pressed
                                         Intent intent = new Intent(MapActivity.this, JoinHuntMap.class);
                                         intent.putExtra("userHuntCode", mHuntJoin.getText().toString());
+
+                                        dbHandler.addHuntTimer(mHuntJoin.getText().toString());
+                                        printDatabase();
                                         startActivity(intent);
                                     }else{
                                         Toast.makeText(MapActivity.this, "Hunt Codes must be 4 characters long and are case sensitive.", Toast.LENGTH_LONG).show();
@@ -434,6 +438,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             super.onBackPressed();
         }
     }
+
+    public void printDatabase(){
+
+        String dbString = dbHandler.getTableAsString();
+        Log.d("PrintDatabase", "printDatabase: " + dbString );
+    }
+
+
 
 }
 
