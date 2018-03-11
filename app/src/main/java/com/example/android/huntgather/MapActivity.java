@@ -148,19 +148,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     mJoinHuntBut.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if(!mHuntJoin.getText().toString().isEmpty() ){
+                            if(!mHuntJoin.getText().toString().isEmpty()  ){
 
-                                if(mHuntJoin.getText().toString().length() == 4) {
-                                    Toast.makeText(MapActivity.this, "HuntCode is " + mHuntJoin.getText().toString(), Toast.LENGTH_SHORT).show();
+                                if(allHuntCodes.contains(mHuntJoin.getText().toString())){
+
+                                    if(mHuntJoin.getText().toString().length() == 4) {
+                                        Toast.makeText(MapActivity.this, "HuntCode is " + mHuntJoin.getText().toString(), Toast.LENGTH_SHORT).show();
 
 
-                                    dialog.dismiss(); // close dialog when add marker pressed
-                                    Intent intent = new Intent(MapActivity.this, JoinHuntMap.class);
-                                    intent.putExtra("userHuntCode", mHuntJoin.getText().toString());
-                                    startActivity(intent);
+                                        dialog.dismiss(); // close dialog when add marker pressed
+                                        Intent intent = new Intent(MapActivity.this, JoinHuntMap.class);
+                                        intent.putExtra("userHuntCode", mHuntJoin.getText().toString());
+                                        startActivity(intent);
+                                    }else{
+                                        Toast.makeText(MapActivity.this, "Hunt Codes must be 4 characters long and are case sensitive.", Toast.LENGTH_LONG).show();
+                                    }
+
+
                                 }else{
-                                    Toast.makeText(MapActivity.this, "Hunt Codes must be 4 characters long and are case sensitive.", Toast.LENGTH_LONG).show();
+
+                                    Toast.makeText(MapActivity.this, "That is not a valid hunt code. Please try again", Toast.LENGTH_LONG).show();
+
                                 }
+
+
                             }else{
                                 //If a box is empty dont post or leave
                                 Toast.makeText(MapActivity.this, "Please fill in any empty fields", Toast.LENGTH_LONG).show();
@@ -384,7 +395,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //                Log.d("allhuntCodes", "allHuntCodes is : " + allHuntCodes.toString());
 
                 currHuntCode = allHuntCodes.get(i);
-                Log.d("Colour is", "Colour = " + colour);
+               // Log.d("Colour is", "Colour = " + colour);
                 if(!currHuntCode.equals(prevHuntCode)){
                     if(colour<329){
                         colour = colour + 30;

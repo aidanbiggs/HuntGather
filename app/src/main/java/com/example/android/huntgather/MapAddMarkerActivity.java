@@ -1,6 +1,8 @@
 package com.example.android.huntgather;
 
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -59,11 +61,14 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
     private ArrayList<String> questionList = new ArrayList<>();
     private ArrayList<String> answerList = new ArrayList<>();
     private ArrayList<Polyline> arrPolylineList;
+    private boolean finishClicked = false;
     JSONObject jsonMarkerList = new JSONObject();
     JSONArray jsonArray = new JSONArray();
+    private boolean dialogOpen;
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-       // Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
         arrMarkerList = new ArrayList<>();
         arrPolylineList = new ArrayList<>();
@@ -90,7 +95,6 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
 
-
     }
 
     private static final String TAG = "MapActivity";
@@ -107,37 +111,39 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private String passedHuntCode;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
-            if(extras == null) {
-                passedHuntCode= null;
+            if (extras == null) {
+                passedHuntCode = null;
             } else {
-                passedHuntCode= extras.getString("userHuntCode");
+                passedHuntCode = extras.getString("userHuntCode");
             }
         } else {
-            passedHuntCode= (String) savedInstanceState.getSerializable("userHuntCode");
+            passedHuntCode = (String) savedInstanceState.getSerializable("userHuntCode");
         }
 
 
         setContentView(R.layout.activity_add_marker_map);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.navBarDrawerLayout);
-        mActionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.action_open,R.string.action_close);
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.action_open, R.string.action_close);
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(true);
 
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
         mActionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getLocationPermission();
-        Button finishedButton = (Button) findViewById(R.id.add_marker_finished_button);
+        final Button finishedButton = (Button) findViewById(R.id.add_marker_finished_button);
 
         finishedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new CallAPI().execute("http://mi-linux.wlv.ac.uk/~1429967/setValues.php");
+                finishClicked = true;
                 MapAddMarkerActivity.this.onBackPressed();
             }
         });
@@ -152,22 +158,22 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
                 Fragment navBarFragment = null;
                 int id = item.getItemId();
 
-                if(id == R.id.nav_item_create){
+                if (id == R.id.nav_item_create) {
 
                     Toast.makeText(MapAddMarkerActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
                     mDrawerLayout.closeDrawers();
                     navBarFragment = new CreateHuntFragment();
-                }else if(id == R.id.nav_item_join){
+                } else if (id == R.id.nav_item_join) {
                     Toast.makeText(MapAddMarkerActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
-                }else if(id == R.id.nav_item_friends) {
+                } else if (id == R.id.nav_item_friends) {
                     Toast.makeText(MapAddMarkerActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
-                }else if(id == R.id.nav_item_settings) {
+                } else if (id == R.id.nav_item_settings) {
                     Toast.makeText(MapAddMarkerActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
 
 
-                if(navBarFragment != null){
+                if (navBarFragment != null) {
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction ft = fragmentManager.beginTransaction();
                     ft.replace(R.id.navBarDrawerLayout, navBarFragment).addToBackStack(null).commit();
@@ -176,72 +182,71 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
                 }
 
 
-
                 return true;
             }
         });
     }
 
-    private void getDeviceLocation(){
+    private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        try{
-            if(mLocationPermissionsGranted){
+        try {
+            if (mLocationPermissionsGranted) {
 
                 final Task location = mFusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
-                           // mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())).title("Your Position"));
+                            // mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())).title("Your Position"));
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);
 
-                        }else{
+                        } else {
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MapAddMarkerActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             }
-        }catch (SecurityException e){
-            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
+        } catch (SecurityException e) {
+            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom){
-        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
+    private void moveCamera(LatLng latLng, float zoom) {
+        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
-    private void initMap(){
+    private void initMap() {
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(MapAddMarkerActivity.this);
     }
 
-    private void getLocationPermission(){
+    private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
-        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionsGranted = true;
                 initMap();
-            }else{
+            } else {
                 ActivityCompat.requestPermissions(this,
                         permissions,
                         LOCATION_PERMISSION_REQUEST_CODE);
             }
-        }else{
+        } else {
             ActivityCompat.requestPermissions(this,
                     permissions,
                     LOCATION_PERMISSION_REQUEST_CODE);
@@ -253,11 +258,11 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         Log.d(TAG, "onRequestPermissionsResult: called.");
         mLocationPermissionsGranted = false;
 
-        switch(requestCode){
-            case LOCATION_PERMISSION_REQUEST_CODE:{
-                if(grantResults.length > 0){
-                    for(int i = 0; i < grantResults.length; i++){
-                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             mLocationPermissionsGranted = false;
                             Log.d(TAG, "onRequestPermissionsResult: permission failed");
                             return;
@@ -273,7 +278,7 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
 
         return mActionBarDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
 
@@ -283,12 +288,12 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
     @Override
     public void onMapClick(LatLng latLng) {
 
-        double lit = latLng.latitude;
-        double lon = latLng.longitude;
-        String passedHuntCode ;
+        final double lit = latLng.latitude;
+        final double lon = latLng.longitude;
+        String passedHuntCode;
 
 
-        arrMarkerList.add(mMap.addMarker(new MarkerOptions().position(new LatLng(lit, lon)).title("Your Added Marker").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))));
+
 
         /*
         Code for dialog box
@@ -296,9 +301,9 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapAddMarkerActivity.this); // Creates new dialog box builder of activity
         View mView = getLayoutInflater().inflate(R.layout.dialog_add_marker, null); // overlays view on top of current
 
-        final EditText mQuestion = (EditText)  mView.findViewById(R.id.question_editText); // get text stored in question edit text
-        final EditText mAnswer = (EditText)  mView.findViewById(R.id.answer_editText); // get text stored in answer edit text
-        Button mAddMarker = (Button)  mView.findViewById(R.id.add_marker_dialog); //
+        final EditText mQuestion = (EditText) mView.findViewById(R.id.question_editText); // get text stored in question edit text
+        final EditText mAnswer = (EditText) mView.findViewById(R.id.answer_editText); // get text stored in answer edit text
+        Button mAddMarker = (Button) mView.findViewById(R.id.add_marker_dialog); //
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
         dialog.show(); // inflates dialog over builder
@@ -306,21 +311,22 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         mAddMarker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!mQuestion.getText().toString().isEmpty() && !mAnswer.getText().toString().isEmpty()){
+
+                if (!mQuestion.getText().toString().isEmpty() && !mAnswer.getText().toString().isEmpty()) {
 
                     questionList.add(mQuestion.getText().toString());//add Question to question list
                     answerList.add(mAnswer.getText().toString()); // add answer to answer list
+                    arrMarkerList.add(mMap.addMarker(new MarkerOptions().position(new LatLng(lit, lon)).title("Your Added Marker").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))));
+                    dialog.dismiss(); // close dialog when "add marker" pressed
 
-                    dialog.dismiss(); // close dialog when add marker pressed
 
-                }else{
+                } else {
                     //If a box is empty dont post or leave
                     Toast.makeText(MapAddMarkerActivity.this, "Please fill in any empty fields", Toast.LENGTH_SHORT).show();
 
                 }
             }
         });
-
 
 
         for (Polyline polyline : arrPolylineList) {
@@ -336,38 +342,38 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
         }
     }
 
-    public class CallAPI extends AsyncTask<String,ArrayList<Marker>, String> {
+    public class CallAPI extends AsyncTask<String, ArrayList<Marker>, String> {
 
-        public CallAPI(){
+        public CallAPI() {
             //set context variables if required
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            String markerLat ;
-            String markerLng ;
+            String markerLat;
+            String markerLng;
             String huntCode = passedHuntCode;
             String userId = "1";
             String question;
             String answer;
 
 
-            for(int i = 0 ; i < arrMarkerList.size() ; i++){
+            for (int i = 0; i < arrMarkerList.size(); i++) {
 
                 markerLat = String.valueOf(arrMarkerList.get(i).getPosition().latitude);
                 markerLng = String.valueOf(arrMarkerList.get(i).getPosition().longitude);
-                question  = questionList.get(i) ;
-                answer  = answerList.get(i) ;
+                question = questionList.get(i);
+                answer = answerList.get(i);
                 Log.d("Counter", "i = " + i);
                 try {
                     jsonMarkerList = new JSONObject();
-                    jsonMarkerList.put("lat",markerLat);
-                    jsonMarkerList.put("lng",markerLng);
-                    jsonMarkerList.put("id",userId);
-                    jsonMarkerList.put("huntCode",huntCode);
-                    jsonMarkerList.put("question",question);
-                    jsonMarkerList.put("answer",answer);
+                    jsonMarkerList.put("lat", markerLat);
+                    jsonMarkerList.put("lng", markerLng);
+                    jsonMarkerList.put("id", userId);
+                    jsonMarkerList.put("huntCode", huntCode);
+                    jsonMarkerList.put("question", question);
+                    jsonMarkerList.put("answer", answer);
                     Log.d("markerList", "JSONMARKERLIST = " + jsonMarkerList);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -380,7 +386,7 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
                 Log.d("markerLng", "marker Lng = is " + markerLng);
 
             }
-            Log.v("For Loop JsonArray"," = " + jsonArray);
+            Log.v("For Loop JsonArray", " = " + jsonArray);
         }
 
 
@@ -390,24 +396,23 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
             String urlString = params[0]; // URL to call
 
 
-
             OutputStream out = null;
             try {
 
 
-                Log.v("params0",urlString);
-                Log.v("jsonArray is equal to ",jsonArray.toString());
+                Log.v("params0", urlString);
+                Log.v("jsonArray is equal to ", jsonArray.toString());
 
                 URL url = new URL(urlString);
 
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-type","application/json");
+                urlConnection.setRequestProperty("Content-type", "application/json");
                 urlConnection.setDoOutput(true);
 
                 out = new BufferedOutputStream(urlConnection.getOutputStream());
 
-                BufferedWriter writer = new BufferedWriter (new OutputStreamWriter(out, "UTF-8"));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
                 Log.v("JSONarRAY", String.valueOf(jsonArray));
                 writer.write(String.valueOf(jsonArray));
 
@@ -435,7 +440,6 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
                 Log.v("response", " The response is " + response);
 
 
-
                 urlConnection.connect();
                 return null;
 
@@ -444,14 +448,34 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
                 System.out.println(e.getMessage());
 
 
-
             }
 
             return null;
         }
     } //end call API
 
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        //  Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
+        if (finishClicked == false) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to exit?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            MapAddMarkerActivity.this.finish();
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
 
+        }else{
+
+            super.onBackPressed();
+
+        }
+    }
 }
 
 

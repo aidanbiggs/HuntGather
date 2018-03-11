@@ -77,7 +77,7 @@ public class QuestionAnswerFragment extends Fragment {
                 Log.d("mUserA ==" , mUserA.getText().toString());
                 Log.d("placeHolderA ==" , placeHolderAnswer);
 
-                if(mUserA.getText().toString().equals(placeHolderAnswer)){
+                if(mUserA.getText().toString().toLowerCase().trim().equals(placeHolderAnswer.toLowerCase().trim())){
 
 
                     mainActivity.counter++;
@@ -86,7 +86,11 @@ public class QuestionAnswerFragment extends Fragment {
                     getFragmentManager().popBackStack();
 
 
-                }// end if check
+                }else{
+
+                    Toast.makeText(getActivity(),"That answer is incorrect. Please try again", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
 

@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/hunt_code_text"
         android:layout_alignBottom="@+id/hunt_code_text"
-        android:layout_alignLeft="@+id/view_marker_button"
-        android:layout_alignStart="@+id/view_marker_button"
-        android:layout_marginLeft="12dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginLeft="19dp"
+        android:layout_marginStart="19dp"
+        android:layout_toEndOf="@+id/hunt_code_text"
+        android:layout_toRightOf="@+id/hunt_code_text"
         android:text="test"
         android:textSize="32sp" />
 
@@ -24,10 +24,10 @@
         android:id="@+id/hunt_code_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/finish_button"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="52dp"
-        android:layout_toLeftOf="@+id/unique_hunt_create"
-        android:layout_toStartOf="@+id/unique_hunt_create"
+        android:layout_alignRight="@+id/finish_button"
+        android:layout_marginTop="54dp"
         android:text="@string/create_hunt_hunt_code"
         android:textSize="32sp" />
 
@@ -72,8 +72,10 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/add_marker_button"
         android:layout_alignBottom="@+id/add_marker_button"
-        android:layout_toEndOf="@+id/finish_button"
-        android:layout_toRightOf="@+id/finish_button"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="25dp"
+        android:layout_marginRight="25dp"
         android:text="@string/create_hunt_view_marker" />
 
     <Button
@@ -84,6 +86,27 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="33dp"
         android:text="@string/create_hunt_finished" />
+
+    <CheckBox
+        android:id="@+id/multiplayer_check_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/timer_check_box"
+        android:layout_alignBottom="@+id/timer_check_box"
+        android:layout_toLeftOf="@+id/marker_count"
+        android:layout_toStartOf="@+id/marker_count"
+        android:text="@string/multiplayer_string"
+        android:textSize="18dp" />
+
+    <CheckBox
+        android:id="@+id/timer_check_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/add_marker_button"
+        android:layout_alignStart="@+id/add_marker_button"
+        android:layout_centerVertical="true"
+        android:text="@string/timed_hunt_string"
+        android:textSize="18dp" />
 
 
 </RelativeLayout>

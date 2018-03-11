@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,6 +39,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -83,6 +85,8 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     public ArrayList<String> allAnswers = new ArrayList<String>();
     public int counter = 0;
     public int zoomCounter = 0;
+    public int addedMarkerZoomCounter = 0;
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -255,8 +259,7 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
                             currentLocation = (Location) task.getResult();
                             //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())).title("Your Position"));
                             if(zoomCounter >0) {
-                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                        mMap.getCameraPosition().zoom);
+                                //moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),  mMap.getCameraPosition().zoom);
                             }else{
                                 moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM);
                                 zoomCounter++;
@@ -473,6 +476,22 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
         try {
             mMap.clear();
             mMap.addMarker(new MarkerOptions().position(new LatLng(allHuntPoints.get(counter).latitude, allHuntPoints.get(counter).longitude)).title("Your Goal"));
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+            LatLng marker = new LatLng(allHuntPoints.get(counter).latitude,allHuntPoints.get(counter).longitude);
+            LatLng user = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+
+            builder.include(marker);
+            builder.include(user);
+
+            LatLngBounds bounds = builder.build();
+
+            int width = getResources().getDisplayMetrics().widthPixels;
+            int height = getResources().getDisplayMetrics().heightPixels;
+            int padding = (int) (width * 0.20); // offset from edges of the map 10% of screen
+
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+            mMap.animateCamera(cu);
         }catch(Exception e){
 
             Log.e("AddMarkerToMap", "Cant add marker");
