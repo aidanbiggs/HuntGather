@@ -73,8 +73,9 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private String passedHuntCode;
-
+    MyDBHandler dbHandler;
     public Location currentLocation;
+    public String timeDifference = "";
 
 
 
@@ -85,7 +86,7 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     public ArrayList<String> allAnswers = new ArrayList<String>();
     public int counter = 0;
     public int zoomCounter = 0;
-    public int addedMarkerZoomCounter = 0;
+
 
 
     @Override
@@ -188,7 +189,13 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     public void locationChecker() {
 
         if(counter == allQs.size()) {
-            Fragment QAFragment = new QuestionAnswerFragment();
+
+            dbHandler = new MyDBHandler(getApplicationContext(), null,null,1);
+            Log.d("JoinHuntMapBefore", "JoinPrintDatabase: "+ dbHandler.getTableAsString());
+
+            dbHandler.updateHuntTimer(passedHuntCode);
+            Log.d("JoinHuntMapAfter", "JoinPrintDatabase: "+ dbHandler.getTableAsString());
+            timeDifference =  dbHandler.timeDifference();
             Fragment QAFragmentFinish = new FinishFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -213,7 +220,7 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
 
         if((distanceMarkerToDevice > 0 && distanceMarkerToDevice < 65)){
 
-            Toast.makeText(JoinHuntMap.this, "within 65m of current marker", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(JoinHuntMap.this, "within 65m of current marker", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "LocationChecker: Near Location");
             Fragment QAFragment = new QuestionAnswerFragment();
             Fragment QAFragmentFinish = new FinishFragment();

@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -49,7 +51,9 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
         values.put(COLUMN_HUNT_CODE, huntCode);
 
-        Date currentTime = Calendar.getInstance().getTime();
+        Date currentTimeCalendar = Calendar.getInstance().getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-hh.mm.ss");
+        String currentTime = formatter.format(currentTimeCalendar);
         values.put(COLUMN_START_TIME, String.valueOf(currentTime));
 
         SQLiteDatabase db = getWritableDatabase();
@@ -58,17 +62,23 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
 
-    //Delete huntTimer from db
+    //update huntTimer from db
     public void updateHuntTimer(String huntCode){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        Date currentTime = Calendar.getInstance().getTime();
+        Date currentTimeCalendar = Calendar.getInstance().getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-hh.mm.ss");
+        String currentTime = formatter.format(currentTimeCalendar);
         values.put(COLUMN_END_TIME, String.valueOf(currentTime));
 
-        db.update(TABLE_HUNTS,values,"huntCode="+ huntCode,null);
+        db.update(TABLE_HUNTS,values,"huntCode=\""+ huntCode + "\";",null);
+        db.close();
 
     }
+
+
+
 
     //Delete huntTimer from db
     public void deleteHuntTimer(String huntCode){
@@ -108,10 +118,116 @@ public class MyDBHandler extends SQLiteOpenHelper {
         return tableString;
     }
 
+    public String timeDifference() {
+        SQLiteDatabase db = getWritableDatabase();
+        Log.d(TAG, "getTableAsString called");
+        String tableString = String.format("Table %s:\n", TABLE_HUNTS);
+        String startTime = "";
+        String endTime = "";
+
+        Cursor allRows = db.rawQuery("SELECT * FROM " + TABLE_HUNTS, null);
+        if (allRows.moveToFirst()) {
+            String[] columnNames = allRows.getColumnNames();
+            do {
+                for (String name : columnNames) {
+
+                    if (name.equals(COLUMN_START_TIME)) {
+                        startTime = allRows.getString(allRows.getColumnIndex(name));
+
+                    }
+                    if (name.equals(COLUMN_END_TIME)) {
+                        endTime = allRows.getString(allRows.getColumnIndex(name));
+
+                    }
+
+                }
+                tableString += "\n";
+
+            } while (allRows.moveToNext());
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-hh.mm.ss");
+        Date startTimeDate = new Date();
+        Date endTimeDate = new Date();
+        try {
+            startTimeDate = formatter.parse(startTime.trim());
+            endTimeDate = formatter.parse(endTime.trim());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+
+        return printDifference(startTimeDate,endTimeDate);
+
+    }
+
+
     public void clearDatabase() {
         SQLiteDatabase db = getWritableDatabase();
         String clearDBQuery = "DELETE FROM "+TABLE_HUNTS;
         db.execSQL(clearDBQuery);
+    }
+
+    public String printDifference(Date startDate, Date endDate) {
+
+        String returnDifference = "";
+
+        //milliseconds
+        long different = endDate.getTime() - startDate.getTime();
+
+//        System.out.println("startDate : " + startDate);
+//        System.out.println("endDate : "+ endDate);
+//        System.out.println("different : " + different);
+
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = different / daysInMilli;
+        different = different % daysInMilli;
+
+        long elapsedHours = different / hoursInMilli;
+        different = different % hoursInMilli;
+
+        long elapsedMinutes = different / minutesInMilli;
+        different = different % minutesInMilli;
+
+        long elapsedSeconds = different / secondsInMilli;
+
+        //System.out.printf(  "%d days, %d hours, %d minutes, %d seconds%n",elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds);
+
+
+        if((elapsedDays != 0) && (elapsedHours != 0) && (elapsedMinutes !=0) && (elapsedSeconds !=0)){
+
+            returnDifference = elapsedDays + " days, " + elapsedHours + " hours, " + elapsedMinutes + "minutes, "  + elapsedSeconds+ " seconds";
+
+        }else if((elapsedHours != 0) && (elapsedMinutes !=0) && (elapsedSeconds !=0)){
+
+            returnDifference = elapsedHours + " hours, " + elapsedMinutes + " minutes, "  + elapsedSeconds + " seconds";
+
+        }else if((elapsedMinutes !=0) && (elapsedSeconds !=0)){
+
+            returnDifference = elapsedMinutes + " minutes, "  + elapsedSeconds + " seconds";
+
+        }else if((elapsedSeconds !=0)){
+
+        returnDifference =  elapsedSeconds + " seconds";
+
+        }
+
+        return returnDifference;
+
+
+
+    }
+
+
+    public void openDB(){
+
+        SQLiteDatabase db = getWritableDatabase();
+
     }
 
 }

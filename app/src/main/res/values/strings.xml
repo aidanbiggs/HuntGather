@@ -38,9 +38,11 @@
 
     <string name="hunt_code">Hunt Code</string>
     <string name="congrats">Congratulations!</string>
-    <string name="completedHuntText">You have completed this treasure hunt! Press the button below to return to the main menu!</string>
+    <string name="completedHuntText">You have completed this treasure hunt! Statistics below: </string>
     <string name="return_to_main_menu">Return To main Menu</string>
     <string name="quit_sure">Are you sure you want to quit?</string>
     <string name="timed_hunt_string">Timed hunt?</string>
     <string name="multiplayer_string">Multiplayer?</string>
+    <string name="time_taken">Time Taken:</string>
+    <string name="distance_travelled">Distance Travelled:</string>
 </resources>

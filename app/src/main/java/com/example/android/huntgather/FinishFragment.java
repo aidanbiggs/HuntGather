@@ -45,7 +45,7 @@ public class FinishFragment  extends Fragment {
         final JoinHuntMap mainActivity = (JoinHuntMap) getActivity(); //https://stackoverflow.com/questions/13067033/how-to-access-activity-variables-from-a-fragment-android
 
         final Button returnButton = view.findViewById(R.id.returnButton);
-
+        final TextView mTimeDifference = view.findViewById(R.id.timeDifference);
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,7 +61,7 @@ public class FinishFragment  extends Fragment {
         });
 
 
-
+    mTimeDifference.setText(mainActivity.timeDifference);
 
 
 
