@@ -143,7 +143,7 @@ public class ViewPlacedMarkers extends AppCompatActivity implements OnMapReadyCa
                 }else if(id == R.id.nav_item_join){
                     //Toast.makeText(ViewPlacedMarkers.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
-                }else if(id == R.id.nav_item_friends) {
+                }else if(id == R.id.nav_item_explore) {
                    // Toast.makeText(ViewPlacedMarkers.this, "Friends Selected", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.nav_item_settings) {
                     //Toast.makeText(ViewPlacedMarkers.this, "Settings Selected", Toast.LENGTH_SHORT).show();

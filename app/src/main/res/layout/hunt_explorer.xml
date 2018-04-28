@@ -1,0 +1,56 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:scrollbars="none"
+    android:layout_weight="1"
+    android:orientation="horizontal"
+    android:weightSum="100"
+    android:background="@color/cast_libraries_material_featurehighlight_text_header_color"
+    android:clickable="true">
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TableLayout android:id="@+id/hunt_rating_table_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:background="@android:color/black">
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/hunt_code_table_row"
+                android:layout_height="wrap_content"
+                android:layout_weight="50"
+                android:gravity="center"
+                android:text="@string/hunt_code"
+                android:layout_margin="1dp"
+                android:background="@color/colorPrimary"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/rating_table_row"
+                android:layout_height="wrap_content"
+                android:layout_weight="50"
+                android:gravity="center"
+                android:text="Rating"
+                android:layout_margin="1dp"
+                android:background="@color/colorPrimary"
+                android:textSize="28sp" />
+        </TableRow>
+
+
+    </TableLayout>
+</LinearLayout>
+</ScrollView>

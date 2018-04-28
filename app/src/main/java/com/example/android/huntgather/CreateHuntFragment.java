@@ -141,12 +141,12 @@ public class CreateHuntFragment extends Fragment{
                 }
 
 
-                Log.d("markerList", "JSONMARKERLIST = " + jsonMarkerList);
+                //Log.d("markerList", "JSONMARKERLIST = " + jsonMarkerList);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             jsonArray.put(jsonMarkerList);
-            Log.d("JSONARRAY FOR", "jsonArray is " + jsonArray);
+            //Log.d("JSONARRAY FOR", "jsonArray is " + jsonArray);
 
 
 

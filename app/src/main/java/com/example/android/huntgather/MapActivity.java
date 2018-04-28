@@ -186,8 +186,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
 
-                }else if(id == R.id.nav_item_friends) {
-                    //Toast.makeText(MapActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.nav_item_explore) {
+                    mDrawerLayout.closeDrawers();
+                    navBarFragment = new ExplorerFragment();
+                    Toast.makeText(MapActivity.this, "Explorer Selected", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.nav_item_settings) {
                     //Toast.makeText(MapActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
@@ -445,7 +447,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d("PrintDatabase", "printDatabase: " + dbString );
     }
 
+    ArrayList<String> getHuntCodes(){
 
+        return allHuntCodes;
+    }
 
 }
 

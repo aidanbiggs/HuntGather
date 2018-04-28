@@ -165,7 +165,7 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
                 }else if(id == R.id.nav_item_join){
                     //Toast.makeText(JoinHuntMap.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
-                }else if(id == R.id.nav_item_friends) {
+                }else if(id == R.id.nav_item_explore) {
                     //Toast.makeText(JoinHuntMap.this, "Friends Selected", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.nav_item_settings) {
                     //Toast.makeText(JoinHuntMap.this, "Settings Selected", Toast.LENGTH_SHORT).show();
