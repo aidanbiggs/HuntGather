@@ -160,16 +160,16 @@ public class MapAddMarkerActivity extends AppCompatActivity implements OnMapRead
 
                 if (id == R.id.nav_item_create) {
 
-                    Toast.makeText(MapAddMarkerActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MapAddMarkerActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
                     mDrawerLayout.closeDrawers();
                     navBarFragment = new CreateHuntFragment();
                 } else if (id == R.id.nav_item_join) {
-                    Toast.makeText(MapAddMarkerActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MapAddMarkerActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
                 } else if (id == R.id.nav_item_friends) {
-                    Toast.makeText(MapAddMarkerActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MapAddMarkerActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.nav_item_settings) {
-                    Toast.makeText(MapAddMarkerActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MapAddMarkerActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
 
 

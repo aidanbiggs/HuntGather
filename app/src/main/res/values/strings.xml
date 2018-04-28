@@ -45,4 +45,5 @@
     <string name="multiplayer_string">Multiplayer?</string>
     <string name="time_taken">Time Taken:</string>
     <string name="distance_travelled">Distance Travelled:</string>
+    <string name="pleaseRateString">Please rate the hunt :</string>
 </resources>

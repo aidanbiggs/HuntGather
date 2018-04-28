@@ -145,7 +145,8 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
         } else {
             passedHuntCode= (String) savedInstanceState.getSerializable("userHuntCode");
         }
-
+        Log.v("passedHuntCode V" , passedHuntCode);
+        setPassedHuntCode(passedHuntCode);
         Log.v("Testing V" , allQs.toString());
 
         nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -158,16 +159,16 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
 
                 if(id == R.id.nav_item_create){
 
-                    Toast.makeText(JoinHuntMap.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(JoinHuntMap.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
                     mDrawerLayout.closeDrawers();
                     navBarFragment = new CreateHuntFragment();
                 }else if(id == R.id.nav_item_join){
-                    Toast.makeText(JoinHuntMap.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(JoinHuntMap.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
                 }else if(id == R.id.nav_item_friends) {
-                    Toast.makeText(JoinHuntMap.this, "Friends Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(JoinHuntMap.this, "Friends Selected", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.nav_item_settings) {
-                    Toast.makeText(JoinHuntMap.this, "Settings Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(JoinHuntMap.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -356,7 +357,18 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
+    public void setPassedHuntCode(String passedHuntCode){
 
+        Log.d("PassedHuntCode", "getPassedHuntCode: " + passedHuntCode);
+        this.passedHuntCode = passedHuntCode;
+    }
+
+
+    public String getPassedHuntCode(){
+
+        Log.d("PassedHuntCode", "getPassedHuntCode: " + passedHuntCode);
+        return passedHuntCode;
+    }
 
 
     public  class JSONTASK extends AsyncTask<String ,String,String> {
@@ -407,9 +419,9 @@ public class JoinHuntMap extends AppCompatActivity implements OnMapReadyCallback
                         allQs.add(jsonQ);
                         allAnswers.add(jsonAnswer);
                     }
-                    Log.d("This is AllHuntCodes", "Arr:" + allHuntCodes.toString());
-                    Log.d("This is q's", "Arr:" + allQs.toString());
-                    Log.d("This is a's", "Arr:" + allAnswers.toString());
+                   // Log.d("This is AllHuntCodes", "Arr:" + allHuntCodes.toString());
+                    //Log.d("This is q's", "Arr:" + allQs.toString());
+                    //Log.d("This is a's", "Arr:" + allAnswers.toString());
                     finalBufferedData.append(jsonLat + " AND " + jsonLng + " AND " + jsonId + " AND " + jsonHuntCode + "\n");
 
                 }

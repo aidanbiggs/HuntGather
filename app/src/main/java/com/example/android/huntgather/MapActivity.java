@@ -131,11 +131,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 if(id == R.id.nav_item_create){
 
-                    Toast.makeText(MapActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MapActivity.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
                     mDrawerLayout.closeDrawers();
                     navBarFragment = new CreateHuntFragment();
                 }else if(id == R.id.nav_item_join){
-                    Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MapActivity.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
                     AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapActivity.this); // Creates new dialog box builder of activity
                     View mView = getLayoutInflater().inflate(R.layout.dialog_join_hunt, null); // overlays view on top of current
 
@@ -154,7 +154,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 if(allHuntCodes.contains(mHuntJoin.getText().toString())){
 
                                     if(mHuntJoin.getText().toString().length() == 4) {
-                                        Toast.makeText(MapActivity.this, "HuntCode is " + mHuntJoin.getText().toString(), Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(MapActivity.this, "HuntCode is " + mHuntJoin.getText().toString(), Toast.LENGTH_SHORT).show();
 
 
                                         dialog.dismiss(); // close dialog when add marker pressed
@@ -187,9 +187,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
                 }else if(id == R.id.nav_item_friends) {
-                    Toast.makeText(MapActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MapActivity.this, "Friends Selected", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.nav_item_settings) {
-                    Toast.makeText(MapActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MapActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -357,7 +357,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     allHuntPoints.add(new LatLng(Float.parseFloat(jsonLat),Float.parseFloat(jsonLng)));
                     allIds.add(jsonId);
                     allHuntCodes.add(jsonHuntCode);
-                    Log.d("This is AllHuntCodes", "Arr:" + allHuntCodes.toString());
+                    //Log.d("This is AllHuntCodes", "Arr:" + allHuntCodes.toString());
                     finalBufferedData.append(jsonLat + " AND " + jsonLng + " AND " + jsonId + " AND " + jsonHuntCode + "\n");
 
                 }

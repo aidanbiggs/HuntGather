@@ -137,16 +137,16 @@ public class ViewPlacedMarkers extends AppCompatActivity implements OnMapReadyCa
 
                 if(id == R.id.nav_item_create){
 
-                    Toast.makeText(ViewPlacedMarkers.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ViewPlacedMarkers.this, "Create Hunt Selected", Toast.LENGTH_SHORT).show();
                     mDrawerLayout.closeDrawers();
                     navBarFragment = new CreateHuntFragment();
                 }else if(id == R.id.nav_item_join){
-                    Toast.makeText(ViewPlacedMarkers.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ViewPlacedMarkers.this, "Join Hunt Selected", Toast.LENGTH_SHORT).show();
 
                 }else if(id == R.id.nav_item_friends) {
-                    Toast.makeText(ViewPlacedMarkers.this, "Friends Selected", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(ViewPlacedMarkers.this, "Friends Selected", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.nav_item_settings) {
-                    Toast.makeText(ViewPlacedMarkers.this, "Settings Selected", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ViewPlacedMarkers.this, "Settings Selected", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -315,7 +315,7 @@ public class ViewPlacedMarkers extends AppCompatActivity implements OnMapReadyCa
                         allIds.add(jsonId);
                         allHuntCodes.add(jsonHuntCode);
                     }
-                    Log.d("This is AllHuntCodes", "Arr:" + allHuntCodes.toString());
+                    //Log.d("This is AllHuntCodes", "Arr:" + allHuntCodes.toString());
                     finalBufferedData.append(jsonLat + " AND " + jsonLng + " AND " + jsonId + " AND " + jsonHuntCode + "\n");
 
                 }

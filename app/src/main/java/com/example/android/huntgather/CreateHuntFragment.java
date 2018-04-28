@@ -53,7 +53,7 @@ public class CreateHuntFragment extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         int count = getFragmentManager().getBackStackEntryCount();
-        Toast.makeText(getActivity(),"backStackCount is "+ count, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(),"backStackCount is "+ count, Toast.LENGTH_SHORT).show();
         final TextView mHuntCodeTextView = (TextView)view.findViewById(R.id.unique_hunt_create);
         mHuntCode = getRandomString(4);
         mHuntCodeTextView.setText(mHuntCode);
@@ -64,7 +64,7 @@ public class CreateHuntFragment extends Fragment{
         view.findViewById(R.id.add_marker_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(),"You are inside create hunt fragment", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(),"You are inside create hunt fragment", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), MapAddMarkerActivity.class);
                 intent.putExtra("userHuntCode",mHuntCodeTextView.getText().toString());
                 startActivity(intent);
@@ -77,7 +77,7 @@ public class CreateHuntFragment extends Fragment{
         view.findViewById(R.id.finish_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(),"Finished Clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(),"Finished Clicked", Toast.LENGTH_SHORT).show();
                 new CallAPI().execute("http://mi-linux.wlv.ac.uk/~1429967/setOptionsValues.php");
                 getFragmentManager().popBackStack();
             }
@@ -86,7 +86,7 @@ public class CreateHuntFragment extends Fragment{
         view.findViewById(R.id.view_marker_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(),"View Markers clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(),"View Markers clicked", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(),ViewPlacedMarkers.class);
                 intent.putExtra("userHuntCode",mHuntCodeTextView.getText().toString());
                 startActivity(intent);

@@ -9,9 +9,9 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/returnMessage"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp"
+        android:layout_marginTop="11dp"
         android:paddingTop="30dp"
         android:text="@string/congrats"
         android:textSize="40sp" />
@@ -89,5 +89,27 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="59dp"
         android:text="@string/return_to_main_menu" />
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/returnButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="28dp" />
+
+    <TextView
+        android:id="@+id/rateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ratingBar"
+        android:layout_alignLeft="@+id/distanceTravelled"
+        android:layout_alignStart="@+id/distanceTravelled"
+        android:layout_toLeftOf="@+id/timeDifference"
+        android:layout_toStartOf="@+id/timeDifference"
+        android:gravity="center"
+        android:text="@string/pleaseRateString"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>
